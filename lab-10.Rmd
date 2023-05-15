@@ -21,7 +21,7 @@ library(openintro)
 m_bty <- lm(score ~ bty_avg, data = evals)
 summary(m_bty)
 ```
-y = 0.6664x + 3.88
+y = 3.88 + 0.066(bty_avg)
 
 The r^2 is 0.035 and the adjusted r^2 is 0.033
 
@@ -31,124 +31,122 @@ The r^2 is 0.035 and the adjusted r^2 is 0.033
 m_bty_gen <- lm(score ~ bty_avg + gender, data = evals)
 summary(m_bty_gen)
 ```
-y = 0.07416x + 0.17239z + 3.75
+y = 3.74 + 0.066(bty_avg) + 0.17(gender)
 
 The r^2 is 0.059 and the adjusted r^2 is 0.055
 
 ### Exercise 3
 
-# The intercept is the average score for female professors with an average beauty rating of 0.
-# The slope of bty_avg is the change in score for a one-unit increase in beauty rating, holding gender constant.
+The intercept is the average score for female professors with an average beauty rating of 0
+The slope of bty_avg is the change in score for a one-unit increase in beauty rating, holding gender constant (meaning that the score raises 0.07 for each increase in beauty).The slope of gender shows us that male professors have a score that is 0.17 higher than female professors. 
 
 
 ### Exercise 4
 
-What percent of the variability in score is explained by the model m_bty_gen.
-# The adjusted R2 value for m_bty_gen gives the percentage of variability in score that is explained by the model.
+The adjusted R2 value for m_bty_gen gives the percentage of variability in score that is explained by the model. Meaning that m_bty_gen explains (5.9%) of the variance in the score. 
 
 
 ### Exercise 5
 
-What is the equation of the line corresponding to just male professors?
-# To get the equation of the line for male professors, we can set the gender variable to "male" and leave bty_avg at its mean value.
-```{r chunk}
-coef(m_bty_gen)[1] + coef(m_bty_gen)[2] * mean(evals$bty_avg)
-```
-# The equation of the line for male professors is: score = 3.998 + 0.066 * bty_avg
+y = 3.91 + 0.066(bty_avg)
 
 
 ### Exercise 6
 
-For two professors who received the same beauty rating, which gender tends to have the higher course evaluation score?
-# The gender variable has a positive coefficient in the multiple linear regression model, so, holding beauty rating constant, male professors tend to have a higher course evaluation score.
+Male professors tend to have a higher course evaluation score.
 
 
 ### Exercise 7
 
-How does the relationship between beauty and evaluation score vary between male and female professors?
-# To examine this, we can add an interaction term to the multiple linear regression model.
 ```{r chunk4}
 m_bty_gen_int <- lm(score ~ bty_avg * gender, data = evals)
 summary(m_bty_gen_int)
 ```
 
-# The interaction term has a negative coefficient, which suggests that the relationship between beauty and evaluation score is stronger for female professors than for male professors.
+The relationship between beauty and evaluation score is stronger for female professors than for male professors.
 
 ### Exercise 8
 
-How do the adjusted R2 values of m_bty_gen and m_bty compare? What does this tell us about how useful gender is in explaining the variability in evaluation scores when we already have information on the beauty score of the professor.
-# The adjusted R2 for m_bty_gen is slightly higher than that for m_bty, indicating that gender provides some additional explanatory power beyond beauty rating alone. However, the difference in adjusted R2 values is relatively small, suggesting that gender may not be a highly influential predictor.
+The adjusted R2 for m_bty_gen is slightly higher than that for m_bty, this means that gender provides some additional explanatory power beyond beauty rating alone. 
 
 
 ### Exercise 9
 
-Compare the slopes of bty_avg under the two models (m_bty and m_bty_gen). Has the addition of gender to the model changed the parameter estimate (slope) for bty_avg?
-# The slope for bty_avg is similar between the two models, suggesting that the addition of gender did not substantially change the relationship between beauty rating and evaluation score.
+The slope for bty_avg is similar between the two models, the addition of gender did not substantially change the relationship between beauty rating and evaluation score.
 
 ### Exercise 10
 
-reate a new model called m_bty_rank with gender removed and rank added in. Write the equation of the linear model and interpret the slopes and intercept in context of the data.
 
 ```{r intired}
 m_bty_rank <- lm(score ~ bty_avg + rank, data = evals)
 summary(m_bty_rank)
 ```
+y = 3.98+ 0.68(bty_avg) + -0.13(tenured) + -.16(tenure_track)
 
-he intercept is the average score for assistant professors with an average beauty rating of 0.
-# The slope of bty_avg is the change in score for a one-unit increase in beauty rating, holding rank constant.
-# The slope of rank is the difference in score between associate and assistant professors, holding beauty rating constant
+The intercept is the average score for assistant professors with an average beauty rating of 0.
+
+The slope of bty_avg, holding rank constant, states that with a bty increase of 1, score would increase by 0.68
+
+The slope of tenured states that tenured professors have scores decreased by -0.13
+
+The slope of tenure_track states that tenure track professors have scores decreased by -0.16
 
 ### Exercise 11
 
-Based on the given variables, we would expect ethnicity to be the worst predictor of evaluation scores. This is because ethnicity is not related to the professor's ability to teach or students' evaluation of the course. To confirm this, we can fit a simple linear regression model with evaluation score as the response variable and ethnicity as the predictor variable:
+Based on the given variables, we would expect ethnicity to be the worst predictor of evaluation scores. This is because ethnicity is not related to the professor's ability to teach or students' evaluation of the course. 
 
 
 ### Exercise 12
-```{r chunk5}
-model <- lm(score ~ ethnicity, data = dataset)
-summary(model)
-```
 
+To confirm this, we can fit a simple linear regression model with evaluation score as the response variable and ethnicity as the predictor variable:
+
+```{r chunk5}
+m_eth <- lm(score ~ ethnicity, data = evals)
+summary(m_eth)
+```
+Ethnicity doesnt seem to influence scores at all. 
 
 ### Exercise 13
 
-If we are already including cls_perc_eval and cls_students in the full model, we should not include cls_did_eval as an additional predictor. This is because cls_did_eval is highly correlated with cls_perc_eval and including both in the model can lead to multicollinearity issues.
+If we are already including cls_perc_eval and cls_students in the full model, we should not include cls_did_eval as an additional predictor. This is because cls_did_eval is highly correlated with cls_perc_eval (that they are basically the same thing).
 
 ### Exercise 14
 
-We can fit a full linear regression model with all predictors except cls_did_eval using the following code:
 
 ```{r code}
 full_model <- lm(score ~ rank + ethnicity + gender + language + age + cls_perc_eval + 
-                  cls_students + cls_level + cls_profs + cls_credits + bty_avg, data = dataset)
+                  cls_students + cls_level + cls_profs + cls_credits + bty_avg, data = evals)
 summary(full_model)
 ```
 
 ### Exercise 15
 
-We can use backward selection with adjusted R-squared as the selection criterion to determine the best model. This involves iteratively removing predictors from the full model until we arrive at a model with the highest adjusted R-squared value. The code to do this is:
 
 ```{r h}
-best_model <- step(full_model, direction = "backward", k = log(nrow(dataset)), trace = 0)
-summary(best_model)
+linear_reg() %>%
+  set_engine("lm") %>%
+  fit(score ~ bty_avg + cls_perc_eval+ cls_students+ rank, data = evals) %>%
+  tidy()
+
+summary(lm(score ~ bty_avg + cls_perc_eval+ cls_students+ rank, data = evals))
 ```
 The final model includes the following variables: cls_perc_eval, cls_students, bty_avg, and rank.
 
 The linear model for predicting score based on the final model is:
 
-score = -2.29 + 0.04 * cls_perc_eval + 0.05 * cls_students + 0.13 * bty_avg - 0.07 * rank
+y = -2.29 + 0.04(cls_perc_eval) + 0.05(cs_students) + 0.13 (bty_avg) - 0.07(rank)
 
 
 
 ### Exercise 16
 
-One numerical predictor in the final model is bty_avg, which represents the average beauty rating of the professor. The slope coefficient of 0.13 indicates that, holding all other variables constant, a one-unit increase in bty_avg is associated with a 0.13-point increase in evaluation score.
+One numerical predictor in the final model is bty_avg, which represents the average beauty rating of the professor. The slope coefficient of 0.13 indicates that a 1 unit increase in bty_avg is associated with a 0.13-point increase in evaluation score.
 
-One categorical predictor in the final model is rank, which represents the academic rank of the professor (1 for assistant professor, 2 for associate professor, and 3 for full professor). The slope coefficient of -0.07 indicates that, holding all other variables constant, being a full professor is associated with a 0.07-point decrease in evaluation score compared to being an assistant professor.
+One categorical predictor in the final model is rank, which represents the academic rank of the professor (1 for assistant professor, 2 for associate professor, and 3 for full professor). The slope coefficient of -0.07 indicates that being a full professor is associated with a 0.07-point decrease in evaluation score compared to being an assistant professor.
 
 ### Exercise 17
 
-Based on the final model, a high-scoring professor and course at the University of Texas at Austin would have the following characteristics:
+A high-scoring professor and course at the University of Texas at Austin would have the following characteristics:
 
 Higher values of cls_perc_eval and cls_students (i.e., higher course evaluations and more students in the course)
 Higher values of bty_avg (i.e., a higher average beauty rating for the professor)
@@ -158,7 +156,7 @@ Lower rank (i.e., being an assistant or associate professor rather than a full p
 
 Would you be comfortable generalizing your conclusions to apply to professors generally (at any university)? Why or why not?
 
-We should be cautious about generalizing these conclusions to professors at other universities. The model was built using data from the University of Texas at Austin and may not be representative of other institutions. Additionally, there may be other variables that are important predictors of evaluation scores that were not included in the model.
+Not at all.The model was built using data from the University of Texas at Austin and is not representative of other universities. There may be other variables that are important predictors of evaluation scores at other universities that weren't included in this model. Thus, the model would need to be reevaluated. 
 ...
 
 
